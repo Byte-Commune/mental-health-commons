@@ -1,7 +1,11 @@
-const express = require('express');
+const express = require("express");
 const app = express();
-const port = process.env.PORT || 3001;
 
-app.get('/', (req, res) => res.send('Hello from backend!'));
+//middleware before routes
+app.use(express.json());
 
-app.listen(port, () => console.log(`Server running on port ${port}`));
+// Your routes
+const authRoutes = require("./routes/auth");
+app.use("/api/auth", authRoutes);
+
+module.exports = app;
