@@ -1,11 +1,12 @@
 const express = require("express");
 const app = express();
 
-//middleware before routes
-app.use(express.json());
+app.use(express.json()); // For parsing JSON request body
 
-// Your routes
-const authRoutes = require("./routes/auth");
-app.use("/api/auth", authRoutes);
+// Import routes
+const authRoutes = require("./routes/auth"); // Import auth routes (register, login, and protected)
+
+// Mount routes
+app.use("/api/auth", authRoutes); // Use auth routes under /api/auth
 
 module.exports = app;
