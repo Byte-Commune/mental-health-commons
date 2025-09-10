@@ -3,8 +3,6 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useForm } from "react-hook-form";
-import ReCAPTCHA from "react-google-recaptcha";
-import { useState } from "react";
 
 export default function SignupPage() {
   const {
@@ -12,17 +10,11 @@ export default function SignupPage() {
     handleSubmit,
     formState: { errors },
   } = useForm();
-  
-  const [captchaToken, setCaptchaToken] = useState(null);
-  
+
   const onSubmit = (data) => {
-    if (!captchaToken) {
-      alert("Please verify reCAPTCHA first!");
-      return;
-    }
-    console.log("Signup data:", data, "captcha:", captchaToken);
+    console.log("Signup data:", data);
   };
-  
+
   return (
     <main className="flex min-h-screen items-center justify-center" role="main">
       <section
@@ -42,6 +34,7 @@ export default function SignupPage() {
             />
             {errors.name && <p className="text-sm text-red-500">{errors.name.message}</p>}
           </div>
+
           <div className="space-y-2">
             <Label htmlFor="email">Email</Label>
             <Input 
@@ -51,6 +44,7 @@ export default function SignupPage() {
             />
             {errors.email && <p className="text-sm text-red-500">{errors.email.message}</p>}
           </div>
+
           <div className="space-y-2">
             <Label htmlFor="password">Password</Label>
             <Input 
@@ -60,10 +54,7 @@ export default function SignupPage() {
             />
             {errors.password && <p className="text-sm text-red-500">{errors.password.message}</p>}
           </div>
-          {/* <ReCAPTCHA
-            sitekey={process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY}
-            onChange={(token) => setCaptchaToken(token)}
-          /> */}
+
           <Button type="submit" className="w-full">
             Sign Up
           </Button>
