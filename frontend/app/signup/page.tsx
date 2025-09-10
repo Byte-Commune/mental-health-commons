@@ -4,11 +4,13 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useForm } from "react-hook-form";
+import { useState } from "react";
 
 type SignupFormData = {
   name: string;
   email: string;
   password: string;
+  rememberMe: boolean;
 };
 
 export default function SignupPage() {
@@ -17,6 +19,8 @@ export default function SignupPage() {
     handleSubmit,
     formState: { errors },
   } = useForm<SignupFormData>();
+
+  const [showPassword, setShowPassword] = useState(false);
 
   const onSubmit = (data: SignupFormData) => {
     console.log("Signup data:", data);
@@ -41,7 +45,7 @@ export default function SignupPage() {
             Fill in your name, email, and password to create an account.
           </p>
 
-
+          {/* Name */}
           <div className="space-y-2">
             <Label htmlFor="name">Name</Label>
             <Input
@@ -68,7 +72,7 @@ export default function SignupPage() {
             )}
           </div>
 
-
+          {/* Email */}
           <div className="space-y-2">
             <Label htmlFor="email">Email</Label>
             <Input
@@ -95,25 +99,34 @@ export default function SignupPage() {
             )}
           </div>
 
-
           <div className="space-y-2">
             <Label htmlFor="password">Password</Label>
-            <Input
-              id="password"
-              type="password"
-              aria-required="true"
-              aria-invalid={errors.password ? "true" : "false"}
-              aria-describedby={
-                errors.password ? "password-error" : "password-help"
-              }
-              {...register("password", {
-                required: "Password is required",
-                minLength: {
-                  value: 6,
-                  message: "Password must be at least 6 characters",
-                },
-              })}
-            />
+            <div className="relative">
+              <Input
+                id="password"
+                type={showPassword ? "text" : "password"}
+                aria-required="true"
+                aria-invalid={errors.password ? "true" : "false"}
+                aria-describedby={
+                  errors.password ? "password-error" : "password-help"
+                }
+                {...register("password", {
+                  required: "Password is required",
+                  minLength: {
+                    value: 6,
+                    message: "Password must be at least 6 characters",
+                  },
+                })}
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword((prev) => !prev)}
+                className="absolute inset-y-0 right-2 flex items-center text-sm text-gray-600 hover:text-gray-900"
+                aria-label={showPassword ? "Hide password" : "Show password"}
+              >
+                {showPassword ? "Hide" : "Show"}
+              </button>
+            </div>
             <p id="password-help" className="sr-only">
               Must be at least 6 characters long.
             </p>
@@ -126,6 +139,19 @@ export default function SignupPage() {
                 {errors.password.message}
               </p>
             )}
+          </div>
+
+
+          <div className="flex items-center space-x-2">
+            <input
+              id="rememberMe"
+              type="checkbox"
+              {...register("rememberMe")}
+              className="h-4 w-4 rounded border-gray-300"
+            />
+            <Label htmlFor="rememberMe" className="text-sm">
+              Remember me
+            </Label>
           </div>
 
 
