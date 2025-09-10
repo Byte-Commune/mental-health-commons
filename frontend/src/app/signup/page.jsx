@@ -15,13 +15,14 @@ export default function SignupPage() {
     formState: { errors },
   } = useForm();
 
-  const onSubmit = (data) => {
-    if (!captchaToken) {
-      alert("Please complete the reCAPTCHA");
-      return;
-    }
-    console.log("Signup data:", data, "captcha:", captchaToken);
-  };
+ const onSubmit = (data) => {
+  if (!recapToken) {
+    alert("Please complete the reCAPTCHA");
+    return;
+  }
+
+};
+
 
   return (
     <main className="flex min-h-screen items-center justify-center" role="main">
