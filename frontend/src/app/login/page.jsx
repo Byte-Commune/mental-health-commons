@@ -1,25 +1,50 @@
 "use client";
 
-
+import { useState } from "react";
+import { useRouter } from "next/navigation"; // for redirecting
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useForm } from "react-hook-form";
 
-type LoginFormData = {
-  email: string;
-  password: string;
-};
-
 export default function LoginPage() {
+  const [loading, setLoading] = useState(false);
+  const router = useRouter();
+
   const {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm<LoginFormData>();
+  } = useForm();
 
-  const onSubmit = (data: LoginFormData) => {
-    console.log("Form data:", data);
+  const onSubmit = async (data) => {
+    setLoading(true);
+    try {
+      const res = await fetch(
+        `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/auth/login`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(data),
+        }
+      );
+
+      const result = await res.json();
+
+      if (res.ok) {
+        alert(result.message || "Login successful!");
+        // Redirect to dashboard or homepage after login
+        router.push("/dashboard"); // change this route as needed
+      } else {
+        alert(result.error || "Login failed");
+      }
+    } catch (error) {
+      alert("Network error: " + error.message);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -31,7 +56,6 @@ export default function LoginPage() {
         <h1 id="login-heading" className="text-2xl font-bold">
           Login
         </h1>
-
         <form
           onSubmit={handleSubmit(onSubmit)}
           className="space-y-4"
@@ -40,8 +64,6 @@ export default function LoginPage() {
           <p id="login-instructions" className="sr-only">
             Please enter your email and password to sign in.
           </p>
-
-
           <div className="space-y-2">
             <Label htmlFor="email">Email</Label>
             <Input
@@ -57,19 +79,14 @@ export default function LoginPage() {
                   message: "Enter a valid email",
                 },
               })}
+              disabled={loading}
             />
             {errors.email && (
-              <p
-                id="email-error"
-                role="alert"
-                className="text-sm text-red-500"
-              >
+              <p id="email-error" role="alert" className="text-sm text-red-500">
                 {errors.email.message}
               </p>
             )}
           </div>
-
-
           <div className="space-y-2">
             <Label htmlFor="password">Password</Label>
             <Input
@@ -85,6 +102,7 @@ export default function LoginPage() {
                   message: "Password must be at least 6 characters",
                 },
               })}
+              disabled={loading}
             />
             {errors.password && (
               <p
@@ -96,13 +114,13 @@ export default function LoginPage() {
               </p>
             )}
           </div>
-
           <Button
             type="submit"
             className="w-full"
-            aria-label="Sign in in youur account"
+            aria-label="Sign in to your account"
+            disabled={loading}
           >
-            Sign In
+            {loading ? "Signing In..." : "Sign In"}
           </Button>
         </form>
       </section>
