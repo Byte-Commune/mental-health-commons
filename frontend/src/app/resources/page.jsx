@@ -1,26 +1,30 @@
 "use client";
 import { useState } from "react";
+import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button";
 
 export default function ResourcePage() {
   const [activeSection, setActiveSection] = useState("videos");
+  const [searchQuery, setSearchQuery] = useState("")
+
+  
 
   const videos = [
     {
-      title: "Mental Therapy Session",
+      title: "What is mental health?",
       embed: "https://www.youtube.com/embed/G0zJGDokyWQ",
     },
-      {
-      title: "Mental Therapy Session",
-      embed: "https://www.youtube.com/embed/G0zJGDokyWQ",
+    {
+      title: "How to manage your mental health | Leon Taylor",
+      embed: "https://www.youtube.com/embed/rkZl2gsLUp4",
     },
-      {
-      title: "Mental Therapy Session",
-      embed: "https://www.youtube.com/embed/G0zJGDokyWQ",
+    {
+      title: "Why Mental Health Is Insanely Complex",
+      embed: "https://www.youtube.com/embed/X_90QQ2QWUc",
     },
-      {
-      title: "Mental Therapy Session",
-      embed: "https://www.youtube.com/embed/G0zJGDokyWQ",
+    {
+      title: "Psychologists Debunk 25 Mental-Health Myths",
+      embed: "https://www.youtube.com/embed/Ii5m8Ta1iBY",
     },
   ];
 
@@ -34,14 +38,25 @@ export default function ResourcePage() {
   const guides = [
     {
       title: "Mental Wellness Guide",
-      file: "/guides/wellness-guide.pdf", //extract locally 
+      file: "/guides/*.pdf", //extract locally
     },
   ];
+
+  const searchedVid = videos.filter((vid) => vid.title.toLocaleLowerCase().includes(searchQuery.toLocaleLowerCase()))
+  const searchedAud = audios.filter((audio) => audio.title.toLowerCase().includes(searchQuery.toLowerCase()))
+  const searchedGuide = guides.filter((guide) => guide.title.toLowerCase().includes(searchQuery.toLowerCase()));
+
 
   return (
     <main className="flex flex-col items-center justify-center min-h-screen p-6 space-y-6">
       <h1 className="text-3xl font-bold">Psychoeducational Resource Hub</h1>
-
+      <Input
+        type="text"
+        placeholder="Search resources..."
+        value={searchQuery}
+        onChange={(e) => setSearchQuery(e.target.value)}
+        className="max-w-md"
+      />
       <div className="flex space-x-4">
         <Button
           variant={activeSection === "videos" ? "default" : "outline"}
@@ -63,15 +78,14 @@ export default function ResourcePage() {
         </Button>
       </div>
 
-
       <div className="w-full max-w-2xl">
         {activeSection === "videos" && (
           <div className="space-y-4">
-            {videos.map((vid, i) => (
+            {searchedVid.map((vid, i) => (
               <div key={i} className="aspect-video">
                 <iframe
                   src={vid.embed}
-                  title={vid.title} 
+                  title={vid.title}
                   className="w-full h-full rounded-xl shadow"
                   allowFullScreen
                 />
@@ -82,7 +96,7 @@ export default function ResourcePage() {
 
         {activeSection === "audios" && (
           <div className="space-y-4">
-            {audios.map((audio, i) => (
+            {searchedAud.map((audio, i) => (
               <div key={i} className="space-y-2">
                 <p className="font-medium">{audio.title}</p>
                 <audio controls className="w-full">
@@ -96,7 +110,7 @@ export default function ResourcePage() {
 
         {activeSection === "guides" && (
           <div className="space-y-4">
-            {guides.map((guide, i) => (
+            {searchedGuide.map((guide, i) => (
               <a
                 key={i}
                 href={guide.file}
@@ -112,4 +126,3 @@ export default function ResourcePage() {
     </main>
   );
 }
-
