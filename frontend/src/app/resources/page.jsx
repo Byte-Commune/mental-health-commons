@@ -23,7 +23,7 @@ export default function ResourcePage() {
   }, [searchTerm]);
 
   const videos = [
-     {
+    {
       title: "What is mental health?",
       embed: "https://www.youtube.com/embed/G0zJGDokyWQ",
     },
@@ -50,13 +50,13 @@ export default function ResourcePage() {
   ];
 
   // Filter based on debouncedTerm
-  const filteredVideos = videos.filter(v =>
+  const filteredVideos = videos.filter((v) =>
     v.title.toLowerCase().includes(debouncedTerm.toLowerCase())
   );
-  const filteredAudios = audios.filter(a =>
+  const filteredAudios = audios.filter((a) =>
     a.title.toLowerCase().includes(debouncedTerm.toLowerCase())
   );
-  const filteredGuides = guides.filter(g =>
+  const filteredGuides = guides.filter((g) =>
     g.title.toLowerCase().includes(debouncedTerm.toLowerCase())
   );
 
@@ -64,14 +64,12 @@ export default function ResourcePage() {
     <main className="flex flex-col items-center justify-center min-h-screen p-6 space-y-6">
       <h1 className="text-3xl font-bold">Psychoeducational Resource Hub</h1>
 
-
       <Input
         placeholder="Search resources..."
         value={searchTerm}
         onChange={(e) => setSearchTerm(e.target.value)}
         className="max-w-md"
       />
-
 
       <div className="flex space-x-4">
         <Button
@@ -94,29 +92,32 @@ export default function ResourcePage() {
         </Button>
       </div>
 
-
       <div className="w-full max-w-2xl">
-{activeSection === "videos" && (
-         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-    {filteredVideos.length > 0 ? (
-             filteredVideos.map((vid, i) => (
-        <div key={i} className="w-full">
-          <div className="w-full aspect-video">
+        {activeSection === "videos" && (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            {filteredVideos.length > 0 ? (
+              filteredVideos.map((vid, i) => (
+                <div key={i} className="w-full">
+                  <div className="w-full aspect-video">
                     <iframe
-              src={vid.embed}
-              title={vid.title}
-              className="w-full h-full rounded-xl shadow-lg"
-              allowFullScreen
-            />
+                      src={vid.embed}
+                      title={vid.title}
+                      className="w-full h-full rounded-xl shadow-lg"
+                      allowFullScreen
+                    />
                   </div>
-          <p className="mt-2 text-lg font-semibold text-left line-clamp-2">{vid.title}</p>
-            </div>
-      ))
-    ) : (
-             <p className="text-gray-500 text-center col-span-full">No videos found.</p>
-    )}
-  </div>
-)}
+                  <p className="mt-2 text-lg font-semibold text-left line-clamp-2">
+                    {vid.title}
+                  </p>
+                </div>
+              ))
+            ) : (
+              <p className="text-gray-500 text-center col-span-full">
+                No videos found.
+              </p>
+            )}
+          </div>
+        )}
 
         {activeSection === "audios" && (
           <div className="space-y-4">
