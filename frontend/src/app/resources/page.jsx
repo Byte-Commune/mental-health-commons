@@ -14,7 +14,7 @@ export default function ResourcePage() {
     const handler = setTimeout(() => {
       setDebouncedTerm(searchTerm);
       console.log(2);
-    }, 400);
+    }, 300);
 
     return () => {
       clearTimeout(handler);
