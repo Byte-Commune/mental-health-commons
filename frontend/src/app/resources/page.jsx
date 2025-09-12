@@ -1,16 +1,29 @@
 "use client";
-import { useState } from "react";
-import { Input } from "@/components/ui/input"
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 
 export default function ResourcePage() {
   const [activeSection, setActiveSection] = useState("videos");
-  const [searchQuery, setSearchQuery] = useState("")
+  const [searchTerm, setSearchTerm] = useState("");
+  const [debouncedTerm, setDebouncedTerm] = useState("");
 
-  
+  // debouncing user's query
+  useEffect(() => {
+    console.log(1);
+    const handler = setTimeout(() => {
+      setDebouncedTerm(searchTerm);
+      console.log(2);
+    }, 400);
+
+    return () => {
+      clearTimeout(handler);
+      console.log("cleared handler because user typed again");
+    };
+  }, [searchTerm]);
 
   const videos = [
-    {
+     {
       title: "What is mental health?",
       embed: "https://www.youtube.com/embed/G0zJGDokyWQ",
     },
@@ -29,34 +42,37 @@ export default function ResourcePage() {
   ];
 
   const audios = [
-    {
-      title: "Relaxation Audio",
-      src: "/audio/*", //will be extracted locally from public folder
-    },
+    { title: "Relaxation Audio", src: "/audio/*" }, // from public folder
   ];
 
   const guides = [
-    {
-      title: "Mental Wellness Guide",
-      file: "/guides/*.pdf", //extract locally
-    },
+    { title: "Mental Wellness Guide", file: "/guides/wellness-guide.pdf" },
   ];
 
-  const searchedVid = videos.filter((vid) => vid.title.toLocaleLowerCase().includes(searchQuery.toLocaleLowerCase()))
-  const searchedAud = audios.filter((audio) => audio.title.toLowerCase().includes(searchQuery.toLowerCase()))
-  const searchedGuide = guides.filter((guide) => guide.title.toLowerCase().includes(searchQuery.toLowerCase()));
-
+  // Filter based on debouncedTerm
+  const filteredVideos = videos.filter(v =>
+    v.title.toLowerCase().includes(debouncedTerm.toLowerCase())
+  );
+  const filteredAudios = audios.filter(a =>
+    a.title.toLowerCase().includes(debouncedTerm.toLowerCase())
+  );
+  const filteredGuides = guides.filter(g =>
+    g.title.toLowerCase().includes(debouncedTerm.toLowerCase())
+  );
 
   return (
     <main className="flex flex-col items-center justify-center min-h-screen p-6 space-y-6">
       <h1 className="text-3xl font-bold">Psychoeducational Resource Hub</h1>
+
+
       <Input
-        type="text"
         placeholder="Search resources..."
-        value={searchQuery}
-        onChange={(e) => setSearchQuery(e.target.value)}
+        value={searchTerm}
+        onChange={(e) => setSearchTerm(e.target.value)}
         className="max-w-md"
       />
+
+
       <div className="flex space-x-4">
         <Button
           variant={activeSection === "videos" ? "default" : "outline"}
@@ -78,48 +94,61 @@ export default function ResourcePage() {
         </Button>
       </div>
 
+
       <div className="w-full max-w-2xl">
         {activeSection === "videos" && (
           <div className="space-y-4">
-            {searchedVid.map((vid, i) => (
-              <div key={i} className="aspect-video">
-                <iframe
-                  src={vid.embed}
-                  title={vid.title}
-                  className="w-full h-full rounded-xl shadow"
-                  allowFullScreen
-                />
-              </div>
-            ))}
+            {filteredVideos.length > 0 ? (
+              filteredVideos.map((vid, i) => (
+                <div key={i} className="aspect-video">
+                  <iframe
+                    src={vid.embed}
+                    title={vid.title}
+                    className="w-full h-full rounded-xl shadow"
+                    allowFullScreen
+                  />
+                </div>
+              ))
+            ) : (
+              <p className="text-gray-500 text-center">No videos found.</p>
+            )}
           </div>
         )}
 
         {activeSection === "audios" && (
           <div className="space-y-4">
-            {searchedAud.map((audio, i) => (
-              <div key={i} className="space-y-2">
-                <p className="font-medium">{audio.title}</p>
-                <audio controls className="w-full">
-                  <source src={audio.src} type="audio/mp3" />
-                  Your browser does not support the audio element.
-                </audio>
-              </div>
-            ))}
+            {filteredAudios.length > 0 ? (
+              filteredAudios.map((audio, i) => (
+                <div key={i} className="space-y-2">
+                  <p className="font-medium">{audio.title}</p>
+                  <audio controls className="w-full">
+                    <source src={audio.src} type="audio/mp3" />
+                    Your browser does not support the audio element.
+                  </audio>
+                </div>
+              ))
+            ) : (
+              <p className="text-gray-500 text-center">No audios found.</p>
+            )}
           </div>
         )}
 
         {activeSection === "guides" && (
           <div className="space-y-4">
-            {searchedGuide.map((guide, i) => (
-              <a
-                key={i}
-                href={guide.file}
-                target="_blank"
-                className="block p-4 border rounded-lg shadow hover:bg-gray-100"
-              >
-                📄 {guide.title}
-              </a>
-            ))}
+            {filteredGuides.length > 0 ? (
+              filteredGuides.map((guide, i) => (
+                <a
+                  key={i}
+                  href={guide.file}
+                  target="_blank"
+                  className="block p-4 border rounded-lg shadow hover:bg-gray-100"
+                >
+                  📄 {guide.title}
+                </a>
+              ))
+            ) : (
+              <p className="text-gray-500 text-center">No guides found.</p>
+            )}
           </div>
         )}
       </div>
