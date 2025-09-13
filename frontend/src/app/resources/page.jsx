@@ -7,19 +7,30 @@ export default function ResourcePage() {
   const [activeSection, setActiveSection] = useState("videos");
   const [searchTerm, setSearchTerm] = useState("");
   const [debouncedTerm, setDebouncedTerm] = useState("");
+  const [dark, setDark] = useState(false); 
 
-  // debouncing user's query
+
   useEffect(() => {
-    console.log(1);
+    const saved = localStorage.getItem("dark-mode") === "true";
+    setDark(saved);
+  }, []);
+
+
+  useEffect(() => {
+    if (dark) {
+      document.documentElement.classList.add("dark");
+    } else {
+      document.documentElement.classList.remove("dark");
+    }
+    localStorage.setItem("dark-mode", dark);
+  }, [dark]);
+
+  // Debouncing user input
+  useEffect(() => {
     const handler = setTimeout(() => {
       setDebouncedTerm(searchTerm);
-      console.log(2);
     }, 300);
-
-    return () => {
-      clearTimeout(handler);
-      console.log("cleared handler because user typed again");
-    };
+    return () => clearTimeout(handler);
   }, [searchTerm]);
 
   const videos = [
@@ -41,15 +52,9 @@ export default function ResourcePage() {
     },
   ];
 
-  const audios = [
-    { title: "Relaxation Audio", src: "/audio/*" }, // from public folder
-  ];
+  const audios = [{ title: "Relaxation Audio", src: "/audio/*" }];
+  const guides = [{ title: "Mental Wellness Guide", file: "/guides/wellness-guide.pdf" }];
 
-  const guides = [
-    { title: "Mental Wellness Guide", file: "/guides/wellness-guide.pdf" },
-  ];
-
-  // Filter based on debouncedTerm
   const filteredVideos = videos.filter((v) =>
     v.title.toLowerCase().includes(debouncedTerm.toLowerCase())
   );
@@ -61,7 +66,15 @@ export default function ResourcePage() {
   );
 
   return (
-    <main className="flex flex-col items-center justify-center min-h-screen p-6 space-y-6">
+    <main className="flex flex-col items-center justify-center min-h-screen p-6 space-y-6 bg-white dark:bg-gray-900 text-black dark:text-white transition-colors duration-300">
+      <Button
+        variant="outline"
+        onClick={() => setDark(!dark)}
+        className="self-end"
+      >
+        {dark ? "☀️ Light Mode" : "🌙 Dark Mode"}
+      </Button>
+
       <h1 className="text-3xl font-bold">Psychoeducational Resource Hub</h1>
 
       <Input
@@ -92,29 +105,22 @@ export default function ResourcePage() {
         </Button>
       </div>
 
-      <div className="w-full max-w-2xl">
+      <div className="w-full max-w-4xl">
         {activeSection === "videos" && (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
             {filteredVideos.length > 0 ? (
               filteredVideos.map((vid, i) => (
-                <div key={i} className="w-full">
-                  <div className="w-full aspect-video">
-                    <iframe
-                      src={vid.embed}
-                      title={vid.title}
-                      className="w-full h-full rounded-xl shadow-lg"
-                      allowFullScreen
-                    />
-                  </div>
-                  <p className="mt-2 text-lg font-semibold text-left line-clamp-2">
-                    {vid.title}
-                  </p>
+                <div key={i} className="w-full aspect-video">
+                  <iframe
+                    src={vid.embed}
+                    title={vid.title}
+                    className="w-full h-full rounded-xl shadow"
+                    allowFullScreen
+                  />
                 </div>
               ))
             ) : (
-              <p className="text-gray-500 text-center col-span-full">
-                No videos found.
-              </p>
+              <p className="text-gray-500 text-center">No videos found.</p>
             )}
           </div>
         )}
@@ -145,7 +151,7 @@ export default function ResourcePage() {
                   key={i}
                   href={guide.file}
                   target="_blank"
-                  className="block p-4 border rounded-lg shadow hover:bg-gray-100"
+                  className="block p-4 border rounded-lg shadow hover:bg-gray-100 dark:hover:bg-gray-800"
                 >
                   📄 {guide.title}
                 </a>
